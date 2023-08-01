@@ -1,0 +1,10 @@
+docker run --name postgres -e POSTGRES_PASSWORD=huucaca2002 -p 5432:5432 -d postgres:alpine
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)
+docker image ls
+docker image rm $(docker image ls -aq)
+
+docker start <container_id_or_name>
+
+docker stop <container_id>
+
