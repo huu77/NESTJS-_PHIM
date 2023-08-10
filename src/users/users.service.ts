@@ -60,17 +60,20 @@ export class UsersService {
     // update info user
     async updateInfoUser(id: string, newInfo: UpdateUserDto): Promise<any> {
         const user = await this.userRepo.findOne({ where: { id: id } });
+       
+        
         if (!user) {
             // Xử lý khi không tìm thấy người dùng
             throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
         }
         user.full_name = newInfo.full_name
-
+        user.email=newInfo.email
+      
+        
         await this.userRepo.update({ id: id }, user);
         await this.userRepo.save(user);
         return {
             message: 'User information updated successfully',
-            user: user,
             status: HttpStatus.OK,
         };
     }
@@ -79,7 +82,7 @@ export class UsersService {
     async updateImageUser(id: string, file: any): Promise<any> {
         const user = await this.userRepo.findOne({ where: { id } });
         if (user.img) {
-            const imagePath = join(user.img);
+            const imagePath = join('uploads/', user.img);
             if (existsSync(imagePath)) {
                 // Xóa tệp hình ảnh hiện có
                 unlinkSync(imagePath);
@@ -91,7 +94,11 @@ export class UsersService {
         user.img =  file.path.split('\\')[1];
 
         await this.userRepo.update({ id }, user);
-        return this.userRepo.save(user);
+        
+        return  {
+            message: 'User imgage is update successfully',
+            status: HttpStatus.OK,
+        };
     }
     //delete one user
     async deleteUser(id: string): Promise<any> {
@@ -157,6 +164,8 @@ export class UsersService {
             return  res.status(401).json({messages:'password is faille'})
         }
         const payload = { id: user.id, user_name: user_name, email: user.email, role: user.role }
+       
+        
         return this.generateJwt(payload, res);
     }
     //generateJwt
