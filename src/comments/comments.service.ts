@@ -27,10 +27,14 @@ export class CommentsService {
           list.users = user
           list.text_comment = text_comment
           await this.commentRepo.save(list)
-
+            const data=[{
+              id:list.id,
+              text_comment:list.text_comment,
+              users: list.users
+            }]
           return {
               message: 'list information create successfully',
-              user: list,
+              data: data,
               status: HttpStatus.OK,
           };
             
@@ -51,12 +55,15 @@ export class CommentsService {
          
         return {
             message: 'comment information get all successfully',
-            user: listUser,
+            listComment: listUser,
             status: HttpStatus.OK,
           };
       }
 
-      async removeComment(id:string):Promise<any>{
+      async removeComment(id:string,userID:string):Promise<any>{
+        const checkComment= await this.commentRepo.findOne({relations:['users'],where:{users:{id:userID},id}})
+        if(!checkComment) throw new HttpException('Not id and user of comment is notempty', HttpStatus.BAD_REQUEST);
+
         const removeID= await this.commentRepo.delete(id)
         if(!removeID){
           throw new HttpException('Not id of comment is empty', HttpStatus.BAD_REQUEST);

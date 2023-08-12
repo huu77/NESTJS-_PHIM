@@ -149,7 +149,7 @@ export class PhimsService {
     const prePage = page - 1 < 1 ? null : page - 1
     return {
       message: 'Phims information get all successfully',
-      user: phims,
+      phims: phims,
       lastPage:lastPage,
       nextPage:nextPage,
       prePage:prePage,
@@ -222,4 +222,15 @@ export class PhimsService {
 
   }
   //
+  async getOnePhim(id: string): Promise<any>{
+    const ID = id.toString()
+    const phim= await this.phimRepo.findOne({where:{id}})
+    if(!phim){
+      throw new HttpException('Failed to get one phim', HttpStatus.BAD_REQUEST);
+    }
+    return {
+      message:"get phim success",
+      phim:phim
+    }
+  }
 }

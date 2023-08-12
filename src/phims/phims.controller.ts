@@ -137,9 +137,12 @@ export class PhimsController {
         return this.phimService.getPhimtoQuocgia(id)
     }
 
-    // get phim from to ngay phat hanh
-
-    //    get from to name , filter, and pagination
-
+    // get one phim
+    @Get('onePhim/:id')
+    @UseGuards(AuthGuard)
+    async getOnePhim(@Param('id') id: string): Promise<any> {
+         
+        return this.phimService.getOnePhim(id)
+    }
 
 }

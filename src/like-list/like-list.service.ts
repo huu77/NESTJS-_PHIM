@@ -26,7 +26,7 @@ export class LikeListService {
         //get list with phim from to array id of map 
         const listPhim = await this.likeListRepo.find({ relations: { phims: true }, where: { id: In(map) } })
         const lp= listPhim.map(x=>x.phims)
-        console.log(lp);
+         
         return {
             message: 'list information get all successfully',
             data: lp,
@@ -57,17 +57,16 @@ export class LikeListService {
 
                 return {
                     message: 'list information create successfully',
-                    user: list,
+                    phim: list.phims,
                     status: HttpStatus.OK,
                 };
             }
             else {
-                checkExits.unlike = unlike;
-                await this.likeListRepo.save(checkExits);
+                
+                await this.likeListRepo.remove(checkExits);
 
                 return {
                     message: 'Like list information updated successfully',
-                    user: checkExits,
                     status: HttpStatus.OK,
                 };
             }
@@ -79,4 +78,25 @@ export class LikeListService {
 
 
     //
+    async Delete(idphim:string,iduser:string): Promise<any> {
+        try {
+            const check = await this.likeListRepo.findOne({
+              relations: ['phims', 'users'],
+              where: {
+                phims: { id: idphim },
+                users: { id: iduser },
+              },
+            });
+            
+            if (check) {
+              await this.likeListRepo.remove(check);
+              return {status:200 ,message:"delete success"}; // Hoặc trả về thông tin khác để chỉ ra xóa thành công
+            } else {
+              return {status:400 ,message:"delete not success"}; // Hoặc trả về thông tin khác để chỉ ra mục không tồn tại
+            }
+          } catch (error) {
+            console.error('Error deleting item:', error);
+             // Xảy ra lỗi, trả về thông tin xóa không thành công
+          }
+    }
 }

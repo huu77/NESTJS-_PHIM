@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CommentDto } from './dto/comment.dto';
 import { AdminAuthGuard } from 'src/users/adminAuth.guard';
@@ -13,7 +13,6 @@ export class CommentsController {
     @Post()
     @UseGuards(AuthGuard)
     async createComment(@Body('info') info:CommentDto):Promise<any>{
-        console.log(info);
         
         return await this.commentService.createComment(info)
     }
@@ -24,8 +23,10 @@ export class CommentsController {
     }
     @Delete('removeComment/:id')
     @UseGuards(AuthGuard)
-    async removeComment(@Param('id') id:string){
-        return await this.commentService.removeComment(id)
+    async removeComment(@Param('id') id:string, @Req() req: Request){
+        const user = req['user_data']
+
+        return await this.commentService.removeComment(id,user.id)
     }
     @Put('update')
     @UseGuards(AuthGuard)
